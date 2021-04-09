@@ -1,5 +1,7 @@
 // Set the time - no error checking, you might want to add it
 
+/*
+
 float appSetNumber() 
 {
 
@@ -157,3 +159,5 @@ int get_digit()
     //while (ttgo->getTouch(x, y)) {} // wait for user to release
     
 }
+
+*/

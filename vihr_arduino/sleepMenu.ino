@@ -1,5 +1,4 @@
-
-
+/*
 
 const int max_sleep_menu_items = 3; // number of items
 String sleep_menu_itemName[max_sleep_menu_items] = {"Sleep", "Wake up", "Back"}; // items names
@@ -100,3 +99,5 @@ void sleep_menu_display(int mSel)
     ttgo->tft->setCursor(50, 190);
     ttgo->tft->print(sleep_menu_itemName[curSel]);
 }
+
+*/

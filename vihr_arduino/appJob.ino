@@ -1,5 +1,7 @@
 // save current weight
 
+/*
+
 void appJob() 
 {
     int16_t x, y;
@@ -59,3 +61,5 @@ void appJob()
     
     ttgo->tft->fillScreen(TFT_BLACK); // Clear screen
 }
+
+*/

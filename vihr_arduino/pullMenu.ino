@@ -1,5 +1,6 @@
 // Step control application menu
 
+/*
 
 const int max_pull_menu_items = 3; // number of items
 String pull_menu_itemName[max_pull_menu_items] = {"Add", "Reset", "Back"}; // items names
@@ -101,3 +102,5 @@ void pull_menu_display(int mSel)
     ttgo->tft->setCursor(50, 190);
     ttgo->tft->print(pull_menu_itemName[curSel]);
 }
+
+*/

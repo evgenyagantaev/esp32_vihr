@@ -3,6 +3,8 @@
 
 //using namespace fs;
 
+/*
+
 void appGraph() 
 {
     int i, j;
@@ -39,12 +41,15 @@ void appGraph()
     base_mm = 6;
     //*/
 
+    /*
     ttgo->tft->setTextSize(1);
     ttgo->tft->setTextColor(TFT_YELLOW, TFT_BLACK);
     snprintf(buf, sizeof(buf), "Graph application");
     ttgo->tft->drawString(buf, 5, 5, 4);
 
     ttgo->tft->fillScreen(TFT_BLACK);
+
+    //*/
 
     /*
     
@@ -60,7 +65,7 @@ void appGraph()
     }
     //*/
 
-    //*
+    /*
     fs::File file = SPIFFS.open("/journal.txt");
     if(!file || file.isDirectory())
     {
@@ -237,7 +242,7 @@ void appGraph()
 
     //*/
     
-
+/*
     while (!ttgo->getTouch(x, y)) {} // Wait for touch to exit
     
   
@@ -245,3 +250,5 @@ void appGraph()
     
     ttgo->tft->fillScreen(TFT_BLACK); // Clear screen
 }
+
+*/

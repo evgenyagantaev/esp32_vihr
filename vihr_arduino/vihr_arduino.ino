@@ -1,4 +1,4 @@
-// An Arduino based framework for the Lilygo T-Watch 2020
+                                                                // An Arduino based framework for the Lilygo T-Watch 2020
 // Much of the code is based on the sample apps for the
 // T-watch that were written and copyrighted by Lewis He.
 //(Copyright (c) 2019 lewis he)
@@ -14,10 +14,14 @@
 
 #define GREEN_LED 26
 #define RED_LED   27
+#define POWER_ON  16
+#define S4_PIN    39
 
 char diagnostics[64];
 
-//*
+int power_off_counter = 0;
+
+/*
 
 TTGOClass *ttgo;
 Preferences preferences;
@@ -89,7 +93,7 @@ void print_wakeup_reason()
 void setup() 
 {
 
-    //*
+    /*
 
     //******************************* PREFERENCES ************************************************
     // Open Preferences with twatch namespace. Each application module, library, etc
@@ -245,6 +249,17 @@ void setup()
     //**********************************************************************
 
     //*/
+    pinMode(POWER_ON, OUTPUT); 
+    digitalWrite(POWER_ON, HIGH);
+
+    Serial.begin(115200);
+    delay(100); //Take some time to open up the Serial Monitor
+    Serial.println("Setup");
+
+    pinMode(GREEN_LED, OUTPUT); 
+    pinMode(RED_LED, OUTPUT); 
+    pinMode(S4_PIN, INPUT); 
+
 
 }
 
@@ -474,10 +489,50 @@ void loop()
 
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(RED_LED, LOW);
+    Serial.println("High");
     delay(500);
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, HIGH);
+    Serial.println("Low");
     delay(500);
+
+    if(digitalRead(S4_PIN) == HIGH)
+    {
+        power_off_counter++;
+        if(power_off_counter > 4)
+        {
+            digitalWrite(GREEN_LED, LOW);
+            digitalWrite(RED_LED, LOW);
+            Serial.println("High");
+            delay(50);
+            digitalWrite(GREEN_LED, HIGH);
+            digitalWrite(RED_LED, HIGH);
+            Serial.println("Low");
+            delay(50);
+            digitalWrite(GREEN_LED, LOW);
+            digitalWrite(RED_LED, LOW);
+            Serial.println("High");
+            delay(50);
+            digitalWrite(GREEN_LED, HIGH);
+            digitalWrite(RED_LED, HIGH);
+            Serial.println("Low");
+            delay(50);
+            digitalWrite(GREEN_LED, LOW);
+            digitalWrite(RED_LED, LOW);
+            Serial.println("High");
+            delay(50);
+            digitalWrite(GREEN_LED, HIGH);
+            digitalWrite(RED_LED, HIGH);
+            Serial.println("Low");
+            delay(50);
+          
+            digitalWrite(POWER_ON, LOW);
+        }
+    }
+    else
+    {
+        power_off_counter = 0;
+    }
     
 }
 //**********************************************************************************************

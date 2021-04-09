@@ -7,6 +7,7 @@
 // 2) Update appName to add the title of the app.
 // 3) in the main routine in TWatch_framework, add a case to the switch statement to call your app routine.
 
+/*
 
 const int maxApp = 10; // number of apps
 String appName[maxApp] = {"Clock", "Job", "Step", "Weight", "Time setup", "Graph", "Pull", "Push", "Journal", "Sleep"}; // app names
@@ -81,3 +82,5 @@ void setMenuDisplay(int mSel)
     ttgo->tft->setCursor(50, 190);
     ttgo->tft->print(appName[curSel]);
 }
+
+*/

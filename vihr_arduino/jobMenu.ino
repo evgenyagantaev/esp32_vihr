@@ -1,4 +1,4 @@
-
+/*
 
 const int max_job_menu_items = 7; // number of items
 String job_menu_itemName[max_job_menu_items] = {"Vihr", "E spusk", "T-watch", "Texts", "Face-id", "Idle", "Back"}; // items names
@@ -75,3 +75,5 @@ void job_menu_display(int mSel)
     ttgo->tft->setCursor(50, 190);
     ttgo->tft->print(job_menu_itemName[curSel]);
 }
+
+*/

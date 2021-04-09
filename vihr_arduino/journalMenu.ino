@@ -1,5 +1,5 @@
 
-
+/*
 
 
 
@@ -85,3 +85,5 @@ void journal_menu_display(int mSel)
     ttgo->tft->setCursor(50, 190);
     ttgo->tft->print(journal_menu_itemName[curSel]);
 }
+
+*/

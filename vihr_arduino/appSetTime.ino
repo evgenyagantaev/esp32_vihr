@@ -1,5 +1,7 @@
 // Set the time - no error checking, you might want to add it
 
+/*
+
 void appSetTime() {
   // Get the current info
   RTC_Date tnow = ttgo->rtc->getDateTime();
@@ -119,3 +121,5 @@ int getTnum() {
   else if (x < 80) return 0;
   else return 13;
 }
+
+*/

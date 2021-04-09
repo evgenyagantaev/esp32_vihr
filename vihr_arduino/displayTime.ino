@@ -3,6 +3,7 @@
 // if you want to update the complete display, fullUpdate =1
 // This helps reduce flicker
 
+/*
 
 void displayTime() 
 {
@@ -33,3 +34,5 @@ void displayTime()
     ttgo->tft->drawString(diagnostics, 0, 218, 4);
     //**********************************************************************
 }
+
+*/
