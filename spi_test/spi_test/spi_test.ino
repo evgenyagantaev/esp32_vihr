@@ -122,6 +122,7 @@ void loop()
 
     //*/
 
+    /*
     //vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
     pressure_sensor_measure_pressure_temperature();
     double pressure = pressure_sensor_get_pressure();
@@ -136,8 +137,9 @@ void loop()
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
     tft.drawString(buf, xpos, ypos, GFXFF);
     counter++;
+    //*/
 
-    
+    delay(3000);
 }
 
 void vspiCommand() 
