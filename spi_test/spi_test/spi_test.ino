@@ -11,6 +11,8 @@
 #define RED_LED   27
 #define POWER_ON  16
 #define S4_PIN    39
+#define SENSOR_CS  21
+#define DISPLAY_CS 22
 
 #define DISPLAY_BACKLIGHT 5
 
@@ -21,8 +23,8 @@ RTC_DS3231 rtc;
 
 char diagnostics[64];
 char buf[128];
-int xpos =  0;
-int ypos = 40;
+int xpos =  2;
+int ypos = 12;
 int counter = 0;
 
 static const int spiClk = 1000000; // 1 MHz
@@ -61,20 +63,19 @@ void setup()
     
     //set up slave select pins as outputs as the Arduino API
     //doesn't handle automatically pulling SS low
-    pinMode(21, OUTPUT); // sensor chs
-    pinMode(22, OUTPUT); // display chs
-
-    vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-    pressure_sensor_object_init();
-    vspi->endTransaction();
+    pinMode(SENSOR_CS, OUTPUT); // sensor chs
+    pinMode(DISPLAY_CS, OUTPUT); // display chs
 
     //*/
 
-    //Serial.println("Backlight turned on");
-    //pinMode(DISPLAY_BACKLIGHT, OUTPUT);
-    //digitalWrite(DISPLAY_BACKLIGHT, HIGH);
+    
 
     tft.begin();
+
+    Serial.println("Backlight turned on");
+    pinMode(DISPLAY_BACKLIGHT, OUTPUT);
+    digitalWrite(DISPLAY_BACKLIGHT, HIGH);
+    
     tft.setRotation(1);
     tft.setTextFont(1);
     tft.fillScreen(TFT_BLACK);
@@ -84,12 +85,26 @@ void setup()
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
     tft.setCursor(xpos, ypos);    // Set cursor near top left corner of screen
   
-    tft.setFreeFont(FSB9);   
-    tft.println("HELLO"); 
-    tft.setFreeFont(FSB12);
-    tft.println("HELLO");    
+    //tft.setFreeFont(FSB9);   
+    //tft.println("HELLO"); 
+    //tft.setFreeFont(FSB12);
     tft.setFreeFont(FSB18);
-    tft.println("HELLO");   
+    //tft.println("Setup");    
+    //tft.setFreeFont(FSB18);
+    //tft.println("HELLO");   
+
+    tft.setCursor(xpos, ypos);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    tft.drawString("SETUP", xpos, ypos, GFXFF);
+
+
+    digitalWrite(DISPLAY_CS, HIGH);
+    digitalWrite(SENSOR_CS, LOW);  // cs low
+    vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
+    pressure_sensor_object_init();
+    vspi->endTransaction();
+    digitalWrite(SENSOR_CS, HIGH);  // cs high
+    
     
     //*************************************** RTC **************************************
     
@@ -97,7 +112,7 @@ void setup()
     {
 	    Serial.println("Couldn't find RTC");
 	    Serial.flush();
-	    abort();
+	    //abort();
     }
     
     if (rtc.lostPower()) 
@@ -120,20 +135,29 @@ void setup()
   
     //*************************************** rtc **************************************
 
-    Serial.println("Setup finished");
-    ypos = 120;
-    tft.setCursor(xpos, ypos);
+    delay(3000);
+    tft.setCursor(xpos, ypos); 
+    //tft.println("Setup finished");
+
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    tft.drawString("Setup finished", xpos, ypos, GFXFF);
+
     tft.setFreeFont(FSB12);
+    
+    Serial.println("Setup finished");
+    
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() 
 {
     //*
-
+    digitalWrite(DISPLAY_CS, HIGH);
+    digitalWrite(SENSOR_CS, LOW);  // cs low
     vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
     pressure_sensor_measure_pressure_temperature();
     vspi->endTransaction();
+    digitalWrite(SENSOR_CS, HIGH);  // cs high
 
     double pressure = pressure_sensor_get_pressure();
     double temp = pressure_sensor_get_temperature();
@@ -161,36 +185,47 @@ void loop()
     Serial.println();
     
     sprintf(diagnostics, "P = %f", pressure);
-    sprintf(buf, "P = %f", pressure);
+    sprintf(buf, "P = %f     ", pressure);
     Serial.println(diagnostics);
     sprintf(diagnostics, "T = %f", temp);
     Serial.println(diagnostics);
     //Serial.end();
 
+    /*
     xpos = 7;  ypos = 160;
+    digitalWrite(SENSOR_CS, HIGH);
+    digitalWrite(DISPLAY_CS, LOW);
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    //tft.drawString(buf, xpos, ypos, GFXFF);
     tft.setCursor(xpos, ypos);
-    tft.print(buf);
+    tft.println("                          ");
+    tft.setCursor(xpos, ypos);
+    tft.println(buf);
+    delay(50);
+    digitalWrite(DISPLAY_CS, HIGH);
 
     //*/
 
-    /*
+    //*
     //vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-    pressure_sensor_measure_pressure_temperature();
-    double pressure = pressure_sensor_get_pressure();
-    sprintf(buf, "P = %f", pressure);
+    //pressure_sensor_measure_pressure_temperature();
+    //double pressure = pressure_sensor_get_pressure();
+    //sprintf(buf, "P = %f", pressure);
     //vspi->endTransaction();
 
-    delay(1000);
+    //delay(1000);
 
     //sprintf(buf, "C = %d     ", counter);
-    xpos = 7;  ypos = 160;
+    //tft.fillScreen(TFT_BLACK);
+    xpos = 2;  ypos = 160;
     tft.setCursor(xpos, ypos);
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
     tft.drawString(buf, xpos, ypos, GFXFF);
     counter++;
     //*/
 
-    delay(3000);
+    
 }
 
 void vspiCommand() 
@@ -200,7 +235,7 @@ void vspiCommand()
     //use it as you would the regular arduino SPI API
     //vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
     digitalWrite(21, LOW); //pull SS slow to prep other end for transfer
-    vspi->transfer(data);  
+    //vspi->transfer(data);  
     digitalWrite(21, HIGH); //pull ss high to signify end of data transfer
-    vspi->endTransaction();
+    //vspi->endTransaction();
 }

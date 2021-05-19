@@ -1,7 +1,7 @@
 #include "pressure_sensor_object.h"
 #include <esp32-hal-gpio.h>
 
-
+//#define vspi SPI
 extern SPIClass * vspi;
 
 //****************************************************************************
