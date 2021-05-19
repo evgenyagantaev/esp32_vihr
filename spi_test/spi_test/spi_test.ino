@@ -23,9 +23,18 @@ RTC_DS3231 rtc;
 
 char diagnostics[64];
 char buf[128];
+char buf1[128];
+char timestamp_buf[128];
 int xpos =  2;
 int ypos = 12;
 int counter = 0;
+
+int current_year;
+int current_month;
+int current_day;
+int current_hour;
+int current_minute;
+int current_seconds;
 
 static const int spiClk = 1000000; // 1 MHz
 
@@ -120,7 +129,7 @@ void setup()
 	    Serial.println("RTC lost power, let's set the time!");
 	    // When time needs to be set on a new device, or after a power loss, the
 	    // following line sets the RTC to the date & time this sketch was compiled
-	    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+	    //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 	    // This line sets the RTC with an explicit date & time, for example to set
 	    // January 21, 2014 at 3am you would call:
 	    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
@@ -169,6 +178,15 @@ void loop()
     
     DateTime now = rtc.now();
 
+    current_year = now.year();
+    current_month = now.month();
+    current_day = now.day();
+    current_hour = now.hour();
+    current_minute = now.minute();
+    current_seconds = now.second();
+    sprintf(timestamp_buf, "%4d.%02d.%02d %02d:%02d:%02d", current_year, current_month, current_day, current_hour, current_minute, current_seconds);
+
+
     Serial.print(now.year(), DEC);
     Serial.print('/');
     Serial.print(now.month(), DEC);
@@ -184,10 +202,11 @@ void loop()
     Serial.print(now.second(), DEC);
     Serial.println();
     
-    sprintf(diagnostics, "P = %f", pressure);
-    sprintf(buf, "P = %f     ", pressure);
+    sprintf(diagnostics, "P = %d", (int)pressure);
+    sprintf(buf, "P = %d     ", (int)pressure);
     Serial.println(diagnostics);
-    sprintf(diagnostics, "T = %f", temp);
+    sprintf(diagnostics, "T = %d     ", (int)temp);
+    sprintf(buf1, "T = %d     ", (int)temp);
     Serial.println(diagnostics);
     //Serial.end();
 
@@ -218,10 +237,18 @@ void loop()
 
     //sprintf(buf, "C = %d     ", counter);
     //tft.fillScreen(TFT_BLACK);
+    xpos = 2;  ypos = 135;
+    tft.setCursor(xpos, ypos);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    tft.drawString(timestamp_buf, xpos, ypos, GFXFF);
     xpos = 2;  ypos = 160;
     tft.setCursor(xpos, ypos);
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
     tft.drawString(buf, xpos, ypos, GFXFF);
+    xpos = 2;  ypos = 185;
+    tft.setCursor(xpos, ypos);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    tft.drawString(buf1, xpos, ypos, GFXFF);
     counter++;
     //*/
 
