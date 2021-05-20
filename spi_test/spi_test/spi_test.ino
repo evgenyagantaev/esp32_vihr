@@ -3,6 +3,9 @@
 #include <TFT_eSPI.h>
 #include "Free_Fonts.h"
 
+#include "FS.h"
+#include "SD.h"
+
 #include "RTClib.h"
 
 #include "pressure_sensor_object.h"
@@ -13,6 +16,12 @@
 #define S4_PIN    39
 #define SENSOR_CS  21
 #define DISPLAY_CS 22
+
+#define HSPI_MISO   2
+#define HSPI_MOSI   15
+#define HSPI_SCLK   14
+#define HSPI_SS     13
+
 
 #define DISPLAY_BACKLIGHT 5
 
@@ -118,6 +127,61 @@ void setup()
 	// rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   
     //*************************************** rtc **************************************
+
+    //*************************************** SD ***************************************
+
+    SPI.begin(HSPI_SCLK, HSPI_MISO, HSPI_MOSI, HSPI_SS); //SCLK, MISO, MOSI, SS
+    pinMode(HSPI_SS, OUTPUT); //HSPI SS
+    
+    if(!SD.begin())
+    {
+        Serial.println("Card Mount Failed");
+        return;
+    }
+    uint8_t cardType = SD.cardType();
+
+    if(cardType == CARD_NONE)
+    {
+        Serial.println("No SD card attached");
+        return;
+    }
+
+    Serial.print("SD Card Type: ");
+    if(cardType == CARD_MMC)
+    {
+        Serial.println("MMC");
+    } else if(cardType == CARD_SD)
+    {
+        Serial.println("SDSC");
+    } else if(cardType == CARD_SDHC)
+    {
+        Serial.println("SDHC");
+    } else 
+    {
+        Serial.println("UNKNOWN");
+    }
+
+    uint64_t cardSize = SD.cardSize() / (1024 * 1024);
+    Serial.printf("SD Card Size: %lluMB\n", cardSize);
+
+    listDir(SD, "/", 0);
+    //createDir(SD, "/mydir");
+    //listDir(SD, "/", 0);
+    //removeDir(SD, "/mydir");
+    //listDir(SD, "/", 2);
+    //writeFile(SD, "/hello.txt", "Hello ");
+    //appendFile(SD, "/hello.txt", "World!\n");
+    //readFile(SD, "/hello.txt");
+    //deleteFile(SD, "/foo.txt");
+    //deleteFile(SD, "/hello.txt");
+    //deleteFile(SD, "/test.txt");
+    //renameFile(SD, "/hello.txt", "/foo.txt");
+    //readFile(SD, "/foo.txt");
+    //testFileIO(SD, "/test.txt");
+    Serial.printf("Total space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
+    Serial.printf("Used space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
+
+    //*************************************** sd ***************************************
 
     tft.drawString("Setup finished    ", xpos, ypos, GFXFF);
     tft.drawString("Pressure              ", xpos, ypos, GFXFF);
