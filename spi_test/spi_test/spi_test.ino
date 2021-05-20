@@ -29,11 +29,13 @@
 TFT_eSPI tft = TFT_eSPI();
 
 RTC_DS3231 rtc;
+DateTime now;
 
 char diagnostics[64];
-char buf[128];
+char buf[256];
 char buf1[128];
 char timestamp_buf[128];
+char log_name_buf[128];
 int xpos =  2;
 int ypos = 12;
 int counter = 0;
@@ -181,6 +183,21 @@ void setup()
     Serial.printf("Total space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
     Serial.printf("Used space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
 
+    // form timestamp
+    now = rtc.now();
+
+    current_year = now.year();
+    current_month = now.month();
+    current_day = now.day();
+    current_hour = now.hour();
+    current_minute = now.minute();
+    current_seconds = now.second();
+    sprintf(timestamp_buf, "%4d.%02d.%02d %02d:%02d:%02d\n", current_year, current_month, current_day, current_hour, current_minute, current_seconds);
+    sprintf(log_name_buf, "/log_%4d%02d%02d_%02d%02d.txt", current_year, current_month, current_day, current_hour, current_minute);
+    appendFile(SD, log_name_buf, "Power ON\n");
+    appendFile(SD, log_name_buf, timestamp_buf); 
+    appendFile(SD, log_name_buf, "***\n\n");   
+
     //*************************************** sd ***************************************
 
     tft.drawString("Setup finished    ", xpos, ypos, GFXFF);
@@ -207,9 +224,9 @@ void loop()
     double pressure = pressure_sensor_get_pressure();
     double temp = pressure_sensor_get_temperature();
 
-    delay(1000);
+    
 
-    DateTime now = rtc.now();
+    now = rtc.now();
 
     current_year = now.year();
     current_month = now.month();
@@ -254,7 +271,11 @@ void loop()
     counter++;
     //*/
 
-    
+    // write in sd-card
+    sprintf(buf, "%s P= %04dhPa T= %02dC\n", timestamp_buf, (int)(pressure/100), (int)(round(temp/100)));
+    appendFile(SD, log_name_buf, buf);
+
+    delay(3000);
 }
 
 void vspiCommand() 
