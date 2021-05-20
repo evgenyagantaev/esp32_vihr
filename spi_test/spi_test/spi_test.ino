@@ -39,7 +39,8 @@ int current_seconds;
 static const int spiClk = 1000000; // 1 MHz
 
 //uninitalised pointers to SPI objects
-SPIClass * vspi = NULL;
+extern SPIClass spi;
+SPIClass * vspi = &spi;
 
 void setup() 
 {
@@ -49,8 +50,7 @@ void setup()
     Serial.begin(115200);
     delay(100); //Take some time to open up the Serial Monitor
     Serial.println("Setup");
-    //Serial.end();
-
+ 
     pinMode(GREEN_LED, OUTPUT); 
     digitalWrite(GREEN_LED, LOW);  // 
     pinMode(RED_LED, OUTPUT); 
@@ -59,19 +59,6 @@ void setup()
 
     //*
   
-    //initialise two instances of the SPIClass attached to VSPI and HSPI respectively
-    vspi = new SPIClass(VSPI);
-    
-    //clock miso mosi ss
-  
-    //initialise vspi with default pins
-    //SCLK = 18, MISO = 19, MOSI = 23, SS = 5
-    vspi->begin();
-    //alternatively route through GPIO pins of your choice
-    //hspi->begin(0, 2, 4, 33); //SCLK, MISO, MOSI, SS
-    
-    //set up slave select pins as outputs as the Arduino API
-    //doesn't handle automatically pulling SS low
     pinMode(SENSOR_CS, OUTPUT); // sensor chs
     pinMode(DISPLAY_CS, OUTPUT); // display chs
 
@@ -88,22 +75,11 @@ void setup()
     tft.setRotation(1);
     tft.setTextFont(1);
     tft.fillScreen(TFT_BLACK);
-    //tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    //snprintf(buf, sizeof(buf), "HELLO");
-    //tft.drawString(buf, 5, 5, 7);
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    tft.setCursor(xpos, ypos);    // Set cursor near top left corner of screen
   
     //tft.setFreeFont(FSB9);   
-    //tft.println("HELLO"); 
     //tft.setFreeFont(FSB12);
     tft.setFreeFont(FSB18);
-    //tft.println("Setup");    
-    //tft.setFreeFont(FSB18);
-    //tft.println("HELLO");   
-
-    tft.setCursor(xpos, ypos);
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
     tft.drawString("SETUP", xpos, ypos, GFXFF);
 
 
@@ -121,7 +97,6 @@ void setup()
     {
 	    Serial.println("Couldn't find RTC");
 	    Serial.flush();
-	    //abort();
     }
     
     if (rtc.lostPower()) 
@@ -144,12 +119,9 @@ void setup()
   
     //*************************************** rtc **************************************
 
-    delay(3000);
-    tft.setCursor(xpos, ypos); 
-    //tft.println("Setup finished");
-
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    tft.drawString("Setup finished", xpos, ypos, GFXFF);
+    tft.drawString("Setup finished    ", xpos, ypos, GFXFF);
+    tft.drawString("Pressure              ", xpos, ypos, GFXFF);
+    tft.drawString("registration          ", xpos, ypos+43, GFXFF);
 
     tft.setFreeFont(FSB12);
     
@@ -173,9 +145,6 @@ void loop()
 
     delay(1000);
 
-    //Serial.begin(115200);
-    //delay(1000);
-    
     DateTime now = rtc.now();
 
     current_year = now.year();
@@ -210,44 +179,13 @@ void loop()
     Serial.println(diagnostics);
     //Serial.end();
 
-    /*
-    xpos = 7;  ypos = 160;
-    digitalWrite(SENSOR_CS, HIGH);
-    digitalWrite(DISPLAY_CS, LOW);
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    //tft.drawString(buf, xpos, ypos, GFXFF);
-    tft.setCursor(xpos, ypos);
-    tft.println("                          ");
-    tft.setCursor(xpos, ypos);
-    tft.println(buf);
-    delay(50);
-    digitalWrite(DISPLAY_CS, HIGH);
-
-    //*/
 
     //*
-    //vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-    //pressure_sensor_measure_pressure_temperature();
-    //double pressure = pressure_sensor_get_pressure();
-    //sprintf(buf, "P = %f", pressure);
-    //vspi->endTransaction();
-
-    //delay(1000);
-
-    //sprintf(buf, "C = %d     ", counter);
-    //tft.fillScreen(TFT_BLACK);
     xpos = 2;  ypos = 135;
-    tft.setCursor(xpos, ypos);
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
     tft.drawString(timestamp_buf, xpos, ypos, GFXFF);
     xpos = 2;  ypos = 160;
-    tft.setCursor(xpos, ypos);
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    tft.drawString(buf, xpos, ypos, GFXFF);
+     tft.drawString(buf, xpos, ypos, GFXFF);
     xpos = 2;  ypos = 185;
-    tft.setCursor(xpos, ypos);
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
     tft.drawString(buf1, xpos, ypos, GFXFF);
     counter++;
     //*/
