@@ -52,9 +52,9 @@ void setup()
     //Serial.end();
 
     pinMode(GREEN_LED, OUTPUT); 
-    digitalWrite(GREEN_LED, HIGH);  // 
+    digitalWrite(GREEN_LED, LOW);  // 
     pinMode(RED_LED, OUTPUT); 
-    digitalWrite(RED_LED, LOW);  // 
+    digitalWrite(RED_LED, HIGH);  // 
     pinMode(S4_PIN, INPUT); 
 
     //*
