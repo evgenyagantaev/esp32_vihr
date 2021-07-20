@@ -13,6 +13,9 @@
 #define GREEN_LED 26
 #define RED_LED   27
 #define POWER_ON  16
+#define S1_PIN    34
+#define S2_PIN    35
+#define S3_PIN    36
 #define S4_PIN    39
 #define SENSOR_CS  21
 #define DISPLAY_CS 22
@@ -66,6 +69,9 @@ void setup()
     digitalWrite(GREEN_LED, LOW);  // 
     pinMode(RED_LED, OUTPUT); 
     digitalWrite(RED_LED, HIGH);  // 
+    pinMode(S1_PIN, INPUT); 
+    pinMode(S2_PIN, INPUT); 
+    pinMode(S3_PIN, INPUT); 
     pinMode(S4_PIN, INPUT); 
 
     //*
@@ -83,7 +89,7 @@ void setup()
     pinMode(DISPLAY_BACKLIGHT, OUTPUT);
     digitalWrite(DISPLAY_BACKLIGHT, HIGH);
     
-    tft.setRotation(1);
+    tft.setRotation(3);
     tft.setTextFont(1);
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
@@ -200,9 +206,13 @@ void setup()
 
     //*************************************** sd ***************************************
 
-    tft.drawString("Setup finished    ", xpos, ypos, GFXFF);
-    tft.drawString("Pressure              ", xpos, ypos, GFXFF);
-    tft.drawString("registration          ", xpos, ypos+43, GFXFF);
+    //tft.drawString("Setup finished    ", xpos, ypos, GFXFF);
+    //tft.drawString("Pressure              ", xpos, ypos, GFXFF);
+    //tft.drawString("registration          ", xpos, ypos+43, GFXFF);
+    tft.drawString("                         ", xpos, ypos, GFXFF);
+    tft.drawString("                         ", xpos, ypos+30, GFXFF);
+    tft.drawString("                         ", xpos, ypos+60, GFXFF);
+    tft.drawString("                         ", xpos, ypos+90, GFXFF);
 
     tft.setFreeFont(FSB12);
     
@@ -220,6 +230,25 @@ void loop()
     pressure_sensor_measure_pressure_temperature();
     vspi->endTransaction();
     digitalWrite(SENSOR_CS, HIGH);  // cs high
+
+    xpos = 2;  ypos = 12;
+
+    if(digitalRead(S1_PIN) == LOW)
+      tft.drawString("button 1                 ", xpos, ypos, GFXFF);
+    else
+      tft.drawString("                         ", xpos, ypos, GFXFF);
+    if(digitalRead(S2_PIN) == LOW)
+      tft.drawString("button 2                 ", xpos, ypos+30, GFXFF);
+    else
+      tft.drawString("                         ", xpos, ypos+30, GFXFF);
+    if(digitalRead(S3_PIN) == LOW)
+      tft.drawString("button 3                 ", xpos, ypos+60, GFXFF);
+    else
+      tft.drawString("                         ", xpos, ypos+60, GFXFF);
+    if(digitalRead(S4_PIN) == HIGH)
+      tft.drawString("button 4                 ", xpos, ypos+90, GFXFF);
+    else
+      tft.drawString("                         ", xpos, ypos+90, GFXFF);
 
     double pressure = pressure_sensor_get_pressure();
     double temp = pressure_sensor_get_temperature();
@@ -272,10 +301,10 @@ void loop()
     //*/
 
     // write in sd-card
-    sprintf(buf, "%s P= %04dhPa T= %02dC\n", timestamp_buf, (int)(pressure/100), (int)(round(temp/100)));
+    sprintf(buf, "%s P= %04dhPa T= %02dC\n", timestamp_buf, (int)(round(pressure/100)), (int)(round(temp/100)));
     appendFile(SD, log_name_buf, buf);
 
-    delay(3000);
+    //delay(3000);
 }
 
 void vspiCommand() 
