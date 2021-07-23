@@ -83,20 +83,26 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     file.close();
 }
 
-void appendFile(fs::FS &fs, const char * path, const char * message){
+void appendFile(fs::FS &fs, const char * path, const char * message)
+{
+    
     Serial.printf("Appending to file: %s\n", path);
-
-    File file = fs.open(path, FILE_APPEND);
+    File file;
+    
+    file = fs.open(path, FILE_APPEND);
     if(!file){
         Serial.println("Failed to open file for appending");
         return;
     }
+    
     if(file.print(message)){
         Serial.println("Message appended");
     } else {
         Serial.println("Append failed");
     }
+    
     file.close();
+    
 }
 
 void renameFile(fs::FS &fs, const char * path1, const char * path2){
@@ -158,4 +164,3 @@ void testFileIO(fs::FS &fs, const char * path){
     Serial.printf("%u bytes written for %u ms\n", 2048 * 512, end);
     file.close();
 }
-

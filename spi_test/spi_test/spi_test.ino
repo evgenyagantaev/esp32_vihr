@@ -37,6 +37,7 @@ DateTime now;
 char diagnostics[64];
 char buf[256];
 char buf1[128];
+char debug_buf[128];
 char timestamp_buf[128];
 char log_name_buf[128];
 int xpos =  2;
@@ -90,13 +91,14 @@ void setup()
     digitalWrite(DISPLAY_BACKLIGHT, HIGH);
     
     tft.setRotation(3);
-    tft.setTextFont(1);
+    tft.setTextSize(2);
+    //tft.setTextFont(1);
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   
     //tft.setFreeFont(FSB9);   
     //tft.setFreeFont(FSB12);
-    tft.setFreeFont(FSB18);
+    //tft.setFreeFont(FSB18);
     tft.drawString("SETUP", xpos, ypos, GFXFF);
 
 
@@ -138,8 +140,10 @@ void setup()
 
     //*************************************** SD ***************************************
 
+    //*
     SPI.begin(HSPI_SCLK, HSPI_MISO, HSPI_MOSI, HSPI_SS); //SCLK, MISO, MOSI, SS
     pinMode(HSPI_SS, OUTPUT); //HSPI SS
+
     
     if(!SD.begin())
     {
@@ -204,6 +208,7 @@ void setup()
     appendFile(SD, log_name_buf, timestamp_buf); 
     appendFile(SD, log_name_buf, "***\n\n");   
 
+    //*/
     //*************************************** sd ***************************************
 
     //tft.drawString("Setup finished    ", xpos, ypos, GFXFF);
@@ -214,15 +219,21 @@ void setup()
     tft.drawString("                         ", xpos, ypos+60, GFXFF);
     tft.drawString("                         ", xpos, ypos+90, GFXFF);
 
-    tft.setFreeFont(FSB12);
+    pinMode(DISPLAY_BACKLIGHT, OUTPUT);
+    digitalWrite(DISPLAY_BACKLIGHT, HIGH);
+
+    //tft.setFreeFont(FSB12);
     
     Serial.println("Setup finished");
     
 }
 
+
+int power_off_counter = 0;
 // the loop function runs over and over again until power down or reset
 void loop() 
 {
+    
     //*
     digitalWrite(DISPLAY_CS, HIGH);
     digitalWrite(SENSOR_CS, LOW);  // cs low
@@ -249,6 +260,29 @@ void loop()
       tft.drawString("button 4                 ", xpos, ypos+90, GFXFF);
     else
       tft.drawString("                         ", xpos, ypos+90, GFXFF);
+
+    if(digitalRead(S4_PIN) == HIGH)
+    {
+        power_off_counter++;
+        
+        if(power_off_counter > 13)
+        {
+            tft.fillScreen(TFT_BLACK);
+            xpos = 2;  ypos = 12;
+            tft.drawString("OFF", xpos, ypos, 4);
+            digitalWrite(POWER_ON, LOW);
+
+            while(1)
+            {
+                delay(1000);
+            }
+        }
+    }
+    else
+    {
+        power_off_counter = 0;
+    }
+    
 
     double pressure = pressure_sensor_get_pressure();
     double temp = pressure_sensor_get_temperature();
@@ -297,6 +331,9 @@ void loop()
      tft.drawString(buf, xpos, ypos, GFXFF);
     xpos = 2;  ypos = 185;
     tft.drawString(buf1, xpos, ypos, GFXFF);
+    sprintf(debug_buf, "%d     ", counter);
+    xpos = 2;  ypos = 210;
+    tft.drawString(debug_buf, xpos, ypos, GFXFF);
     counter++;
     //*/
 
@@ -304,7 +341,7 @@ void loop()
     sprintf(buf, "%s P= %04dhPa T= %02dC\n", timestamp_buf, (int)(round(pressure/100)), (int)(round(temp/100)));
     appendFile(SD, log_name_buf, buf);
 
-    //delay(3000);
+    //delay(1000);
 }
 
 void vspiCommand() 
