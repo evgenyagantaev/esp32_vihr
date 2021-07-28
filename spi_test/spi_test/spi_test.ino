@@ -25,6 +25,12 @@
 #define HSPI_SCLK   14
 #define HSPI_SS     13
 
+#define VSPI_MISO           19
+#define VSPI_MOSI           23
+#define VSPI_SCLK           18
+#define VSPI_DISPLAY_CS     22
+#define VSPI_SENSOR_CS      21
+
 
 #define DISPLAY_BACKLIGHT 5
 
@@ -104,6 +110,7 @@ void setup()
 
     digitalWrite(DISPLAY_CS, HIGH);
     digitalWrite(SENSOR_CS, LOW);  // cs low
+    vspi->setHwCs(false);
     vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
     pressure_sensor_object_init();
     vspi->endTransaction();
@@ -141,8 +148,11 @@ void setup()
     //*************************************** SD ***************************************
 
     //*
-    SPI.begin(HSPI_SCLK, HSPI_MISO, HSPI_MOSI, HSPI_SS); //SCLK, MISO, MOSI, SS
     pinMode(HSPI_SS, OUTPUT); //HSPI SS
+    SPI.begin(HSPI_SCLK, HSPI_MISO, HSPI_MOSI, HSPI_SS); //SCLK, MISO, MOSI, SS
+
+    spiSSDisable(SPI.bus());
+    spiDetachSS(SPI.bus(), DISPLAY_BACKLIGHT);
 
     
     if(!SD.begin())
